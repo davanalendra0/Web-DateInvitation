@@ -285,7 +285,7 @@ if (document.body.dataset.page === 'index') {
         urls.push(u);
 
         const el = m.blob.type.startsWith('video')
-        ? `<video src="${u}" controls playsinline></video>`
+        ? `<video src="${u}#t=0.1" muted playsinline preload="metadata"></video><span class="play" aria-hidden="true">▶</span>`
         : m.blob.type.startsWith('audio')
             ? `<audio src="${u}" controls></audio>`
             : `<img src="${u}" alt="Foto kenangan">`;
@@ -358,6 +358,28 @@ if (document.body.dataset.page === 'index') {
             renderHist();
         }
     });
+
+    /* pratinjau kenangan */
+    const lb = $('#lb');
+
+    $('#hist').addEventListener('click', e => {
+        const el = e.target.closest('.cell img, .cell video');
+        if (!el) return;
+
+        const c = el.cloneNode(true);
+        if (c.tagName === 'VIDEO') {
+            c.removeAttribute('muted');
+            c.muted = false;
+            c.controls = true;
+        }
+
+        $('#lb-body').replaceChildren(c);
+        lb.showModal();
+    });
+
+    $('#lb-x').onclick = () => lb.close();
+    lb.addEventListener('click', e => { if (e.target === lb) lb.close(); });
+    lb.addEventListener('close', () => $('#lb-body').replaceChildren());
 
     $('#hist').addEventListener('change', e => {
         const i = e.target;

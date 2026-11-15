@@ -184,6 +184,70 @@ dialog .acts {
     background: #c2455c
 }
 
+#lb {
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    background: transparent;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+}
+
+#lb::backdrop {
+    background: rgba(10, 5, 20, 0.92);
+}
+
+#lb[open] {
+    display: grid;
+    place-items: center;
+}
+
+#lb-body img,
+#lb-body video {
+    display: block;
+    max-width: 90%;
+    max-height: 85vh;
+    margin: 0 auto;
+    object-fit: contain;
+    border-radius: 12px;
+}
+
+.lb-x {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    background: var(--panel);
+    color: var(--ink);
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.cell img,
+.cell video {
+    cursor: zoom-in;
+}
+
+.play {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+}
+
 /* tiket */
 .ticket {
     display: grid;
