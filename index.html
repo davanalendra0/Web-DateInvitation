@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Date Invitation</title>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,400;1,9..144,600&family=DM+Sans:wght@400;500;700&display=swap">
+        <link rel="stylesheet" href="style.css">
+        <link rel="icon" type="image/jpg" href="asset/img/icon.png">
+    </head>
+    <body data-page="index">
+            <div class="wrap">
+                <h1>Hari Temu</h1>
+                <nav role="tablist">
+                    <button role="tab" data-t="buat" aria-selected="true">Buat tiket</button>
+                    <button role="tab" data-t="riwayat" aria-selected="false">Riwayat</button>
+                </nav>
+
+                <section id="buat" class="grid">
+                    <div class="tk"><div id="preview"></div></div>
+                    <form id="f">
+                        <select id="by" required>
+                            <option value="" selected disabled>Pilih nama</option>
+                            <option>dava</option>
+                            <option>icel</option>
+                        </select>
+                        <label>Judul / deskripsi<input id="title" maxlength="60" placeholder="mis. jalan sore" required></label>
+                        <div class="row">
+                            <label>Tanggal<input id="date" type="date" required></label>
+                            <label>Jam<input id="time" type="time" required></label>
+                        </div>
+                        <label>Notes<textarea id="notes" rows="3" maxlength="200" placeholder="mis. pakai baju hangat"></textarea></label>
+                        <div class="acts"><button class="btn" type="submit">Selesai</button></div>
+                    </form>
+                </section>
+
+                <section id="riwayat" hidden><div id="hist" class="list"></div></section>
+
+            </div>
+
+            <script src="app.js"></script>
+    </body>
+</html>

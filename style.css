@@ -1,0 +1,377 @@
+:root {
+    --bg: #1d1230;
+    --panel: #2b1c45;
+    --ink: #f8e9ee;
+    --mute: #b9a6cf;
+    --paper: #f7dfe6;
+    --pink: #c2255c;
+    --gold: #f2c14e;
+    --line: #4a3668;
+    --on-paper: #2a1238;
+}
+
+html {
+    height: 100%;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.5 'DM Sans', system-ui, sans-serif;
+}
+
+.wrap {
+    width: 1040px;
+    margin: 0 auto;
+    padding: 20px 16px 60px;
+}
+
+h1 {
+    font: italic 600 28px 'Fraunces', serif;
+    margin: 0 0 14px;
+}
+
+nav {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 22px;
+    border-bottom: 1px solid var(--line);
+}
+
+nav button {
+    background: none;
+    border: 0;
+    color: var(--mute);
+    font: 500 15px 'DM Sans';
+    padding: 10px 14px;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+}
+
+nav button[aria-selected=true] {
+    color: var(--ink);
+    border-color: var(--pink);
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+}
+
+select{
+    -moz-appearance: none;
+    appearance:none;
+    -webkit-appearance:none;
+    padding-right:42px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23b9a6cf' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 6l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;
+    background-position:right 14px center;
+    background-size:16px;
+}
+
+.grid {
+    display: grid;
+    gap: 28px;
+    grid-template-columns: 1.1fr 1fr;
+    align-items: start;
+}
+
+.grid .tk {
+    position: sticky;
+    top: 20px;
+}
+
+form {
+    display: grid;
+    gap: 14px;
+    background: var(--panel);
+    padding: 18px;
+    border-radius: 14px;
+}
+
+label {
+    display: grid;
+    gap: 5px;
+    font-weight: 500;
+    font-size: 14px;
+    color: var(--mute);
+}
+
+input,
+select,
+textarea {
+    font: 16px 'DM Sans';
+    padding: 11px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    width: 100%;
+}
+
+.row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.btn {
+    font: 700 15px 'DM Sans';
+    border: 0;
+    border-radius: 999px;
+    padding: 12px 20px;
+    cursor: pointer;
+    background: var(--pink);
+    color: #fff;
+}
+
+.btn.alt {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--line);
+}
+
+.btn.sm {
+    padding: 7px 14px;
+    font-size: 13px;
+}
+
+.acts {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* tiket */
+.ticket {
+    display: grid;
+    grid-template-columns: 1fr 92px;
+    background: var(--paper);
+    color: var(--on-paper);
+    border-radius: 16px;
+    position: relative;
+    filter: drop-shadow(0 14px 22px rgba(0,0,0,.35));
+    -webkit-mask: radial-gradient(circle 11px at calc(100% - 92px) 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 11px at calc(100% - 92px) 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
+    mask: radial-gradient(circle 11px at calc(100% - 92px) 0,#0000 98%,#000) top/100% 51% no-repeat,radial-gradient(circle 11px at calc(100% - 92px) 100%,#0000 98%,#000) bottom/100% 51% no-repeat;
+}
+
+.tk-main {
+    padding: 24px 20px 22px 24px;
+    display: grid;
+    gap: 12px;
+}
+
+.tk-inv {
+    font: italic 400 20px 'Fraunces', serif;
+    color: var(--pink);
+    margin: 0;
+}
+
+.tk-title {
+    font: 600 40px/1.05 'Fraunces', serif;
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.tk-when {
+    font-weight: 700;
+    font-size: 15px;
+}
+
+.tk-notes {
+    font-size: 14px;
+    margin: 0;
+    opacity: .85;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.tk-by {
+    font: italic 600 20px 'Fraunces', serif;
+    border-top: 2px dashed #c9a4b4;
+    padding-top: 10px;
+}
+
+.tk-stub {
+    border-left: 2px dashed #c9a4b4;
+    display: grid;
+    place-content: center;
+    text-align: center;
+    gap: 2px;
+    padding: 8px;
+}
+
+.tk-stub b {
+    font: 600 38px/1 'Fraunces', serif;
+}
+
+.tk-stub span {
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.tk-stub i {
+    font-style: normal;
+    background: var(--gold);
+    border-radius: 99px;
+    padding: 2px 8px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-top: 8px;
+}
+
+/* list */
+.list {
+    display: grid;
+    gap: 26px;
+}
+
+.item {
+    display: grid;
+    gap: 10px;
+}
+
+.meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.empty {
+    color: var(--mute);
+    padding: 30px 0;
+}
+
+.media {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.media > * {
+    width: 100%;
+    border-radius: 10px;
+    background: var(--panel);
+    aspect-ratio: 1;
+    object-fit: cover;
+}
+
+.media audio {
+    aspect-ratio: auto;
+    height: 54px;
+}
+
+.cell {
+    position: relative;
+}
+
+.cell button {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+}
+
+h2 {
+    font: italic 600 22px 'Fraunces', serif;
+    margin: 0;
+}
+
+.gal {
+    display: grid;
+    gap: 10px;
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+}
+
+.badge {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 99px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+}
+
+.badge.diterima {
+    background: #1f7a4d;
+    border-color: #1f7a4d;
+    color: #fff;
+}
+
+.badge.ditolak {
+    background: #8f2a3c;
+    border-color: #8f2a3c;
+    color: #fff;
+}
+
+.badge.menunggu {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: #2a1238;
+}
+
+.tamu {
+    width: 560px;
+    padding-top: 36px;
+}
+
+.btn.big {
+    padding: 15px 30px;
+    font-size: 17px;
+    flex: 1;
+}
+
+.done {
+    margin-top: 28px;
+    display: grid;
+    gap: 4px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    background: var(--panel);
+    border-left: 6px solid var(--gold);
+}
+
+.done.diterima {
+    border-color: #2fb577;
+}
+
+.done.ditolak {
+    border-color: #c2455c;
+}
+
+.done b {
+    font: 600 20px 'Fraunces', serif;
+}
+
+.done span {
+    color: var(--mute);
+}
+
+[hidden] {
+    display: none !important;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .ticket.pop {
+        animation: pop .5s cubic-bezier(.2,1.3,.4,1);
+    }
+
+    @keyframes pop {
+        from {
+        transform: rotate(-3deg) scale(.94);
+        opacity: .4;
+        }
+    }
+}
