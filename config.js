@@ -6,3 +6,8 @@ const firebaseConfig = {
     messagingSenderId: "365462544645",
     appId: "1:365462544645:web:d923f7f78d274b5c62576c"
 };
+
+const CLD = {
+    cloud: 'fmcywaex',
+    preset: 'gqad8izk'
+};

@@ -9,46 +9,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({
 
 const cap = s => s.charAt(0).toUpperCase() + s.slice(1);
 
-/* IndexedDB (privat di browser ini) */
-let dbp = new Promise((res, rej) => {
-    try {
-        const r = indexedDB.open('tiket-date', 1);
-
-        r.onupgradeneeded = () => {
-        r.result.createObjectStore('tickets', { keyPath: 'id' });
-        r.result.createObjectStore('media', { keyPath: 'id' });
-        };
-
-        r.onsuccess = () => res(r.result);
-        r.onerror = () => rej(r.error);
-    } catch (e) {
-        rej(e);
-    }
-});
-
-const mem = {
-    tickets: [],
-    media: []
-};
-
-async function tx(store, mode, fn) {
-    try {
-        const d = await dbp;
-
-        return await new Promise((res, rej) => {
-        const t = d.transaction(store, mode);
-        const s = t.objectStore(store);
-        const r = fn(s);
-
-        t.oncomplete = () => res(r && r.result);
-        t.onerror = () => rej(t.error);
-        });
-    } catch (e) {
-        return null;
-    }
-}
-
-/* Firebase: tiket disimpan di Firestore */
+/* Penyimpanan: Firestore (tiket + data kenangan), Cloudinary (file kenangan) */
 const fb = (async () => {
     const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
     const [{ initializeApp }, fs] = await Promise.all([
@@ -58,43 +19,31 @@ const fb = (async () => {
     return { db: fs.getFirestore(initializeApp(firebaseConfig)), fs };
 })();
 
-const COL = 'dateTickets';
+const COLS = { tickets: 'dateTickets', media: 'dateMedia' };
 
 addEventListener('unhandledrejection', e => {
     alert('Firebase bermasalah: ' + ((e.reason && e.reason.code) || e.reason));
 });
 
 const all = async st => {
-    if (st === 'tickets') {
-        const { db, fs } = await fb;
-        return (await fs.getDocs(fs.collection(db, COL))).docs.map(d => d.data());
-    }
-    return (await tx(st, 'readonly', s => s.getAll())) || mem[st];
+    const { db, fs } = await fb;
+    return (await fs.getDocs(fs.collection(db, COLS[st]))).docs.map(d => d.data());
 };
 
 const one = async id => {
     const { db, fs } = await fb;
-    const d = await fs.getDoc(fs.doc(db, COL, id));
+    const d = await fs.getDoc(fs.doc(db, COLS.tickets, id));
     return d.exists() ? d.data() : null;
 };
 
 const put = async (st, o) => {
-    if (st === 'tickets') {
-        const { db, fs } = await fb;
-        await fs.setDoc(fs.doc(db, COL, o.id), o);
-        return;
-    }
-    if ((await tx(st, 'readwrite', s => s.put(o))) === null) mem[st].push(o);
+    const { db, fs } = await fb;
+    await fs.setDoc(fs.doc(db, COLS[st], o.id), o);
 };
 
 const del = async (st, id) => {
-    if (st === 'tickets') {
-        const { db, fs } = await fb;
-        await fs.deleteDoc(fs.doc(db, COL, id));
-        return;
-    }
-    await tx(st, 'readwrite', s => s.delete(id));
-    mem[st] = mem[st].filter(x => x.id !== id);
+    const { db, fs } = await fb;
+    await fs.deleteDoc(fs.doc(db, COLS[st], id));
 };
 
 const fmtDate = d => d
@@ -281,14 +230,13 @@ if (document.body.dataset.page === 'index') {
     let urls = [], mr = null;
 
     const mediaHTML = m => {
-        const u = URL.createObjectURL(m.blob);
-        urls.push(u);
+        const u = m.url;
 
-        const el = m.blob.type.startsWith('video')
-        ? `<video src="${u}#t=0.1" muted playsinline preload="metadata"></video><span class="play" aria-hidden="true">▶</span>`
-        : m.blob.type.startsWith('audio')
-            ? `<audio src="${u}" controls></audio>`
-            : `<img src="${u}" alt="Foto kenangan">`;
+        const el = m.kind === 'video'
+            ? `<video src="${u}#t=0.1" muted playsinline preload="metadata"></video><span class="play" aria-hidden="true">▶</span>`
+            : m.kind === 'audio'
+                ? `<audio src="${u}" controls></audio>`
+                : `<img src="${u.replace('/upload/', '/upload/f_auto,q_auto,w_1200/')}" alt="Foto kenangan" loading="lazy">`;
 
         return `<div class="cell">${el}<button class="btn sm alt" data-a="dm" data-m="${m.id}">Hapus</button></div>`;
     };
@@ -348,7 +296,7 @@ if (document.body.dataset.page === 'index') {
         } else if (a === 'dm' && await ask('Hapus kenangan ini?', 'Foto, video, atau audio ini akan dihapus dari tiket.')) {
             await del('media', b.dataset.m);
             renderHist();
-        } else if (a === 'del' && await ask('Hapus tiket “' + it.querySelector('.tk-title').textContent + '”?', 'Tiket, status jawabannya, dan kenangan di perangkat ini akan dihapus permanen.')) {
+        } else if (a === 'del' && await ask('Hapus tiket “' + it.querySelector('.tk-title').textContent + '”?', 'Tiket, status jawabannya, dan semua kenangannya akan dihapus permanen.')) {
             await del('tickets', id);
 
             for (const m of (await all('media')).filter(m => m.tid === id)) {
@@ -390,13 +338,34 @@ if (document.body.dataset.page === 'index') {
     });
 
     async function addFiles(it, files) {
+        const msg = it.querySelector('.msg');
+        let n = 0;
+
         for (const f of files) {
-            await put('media', {
-                id: 'm' + Date.now() + Math.random().toString(36).slice(2, 6),
-                tid: it.dataset.id,
-                at: Date.now(),
-                blob: f
-            });
+            msg.textContent = `Mengunggah ${++n} dari ${files.length}…`;
+
+            try {
+                const fd = new FormData();
+                fd.append('file', f);
+                fd.append('upload_preset', CLD.preset);
+
+                const r = await fetch(`https://api.cloudinary.com/v1_1/${CLD.cloud}/auto/upload`, { method: 'POST', body: fd });
+                const j = await r.json();
+                if (!r.ok) throw new Error((j.error && j.error.message) || 'Unggah gagal');
+
+                const kind = f.type.startsWith('video') ? 'video' : f.type.startsWith('audio') ? 'audio' : 'image';
+
+                await put('media', {
+                    id: 'm' + Date.now() + Math.random().toString(36).slice(2, 6),
+                    tid: it.dataset.id,
+                    at: Date.now(),
+                    url: j.secure_url,
+                    kind
+                });
+            } catch (e) {
+                alert('Gagal mengunggah: ' + e.message);
+                break;
+            }
         }
 
         renderHist();
