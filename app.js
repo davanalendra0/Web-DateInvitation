@@ -48,15 +48,51 @@ async function tx(store, mode, fn) {
     }
 }
 
-const all = async st => (await tx(st, 'readonly', s => s.getAll())) || mem[st];
+/* Firebase: tiket disimpan di Firestore */
+const fb = (async () => {
+    const base = 'https://www.gstatic.com/firebasejs/10.12.2/';
+    const [{ initializeApp }, fs] = await Promise.all([
+        import(base + 'firebase-app.js'),
+        import(base + 'firebase-firestore.js')
+    ]);
+    return { db: fs.getFirestore(initializeApp(firebaseConfig)), fs };
+})();
+
+const COL = 'dateTickets';
+
+addEventListener('unhandledrejection', e => {
+    alert('Firebase bermasalah: ' + ((e.reason && e.reason.code) || e.reason));
+});
+
+const all = async st => {
+    if (st === 'tickets') {
+        const { db, fs } = await fb;
+        return (await fs.getDocs(fs.collection(db, COL))).docs.map(d => d.data());
+    }
+    return (await tx(st, 'readonly', s => s.getAll())) || mem[st];
+};
+
+const one = async id => {
+    const { db, fs } = await fb;
+    const d = await fs.getDoc(fs.doc(db, COL, id));
+    return d.exists() ? d.data() : null;
+};
 
 const put = async (st, o) => {
-    if ((await tx(st, 'readwrite', s => s.put(o))) === null) {
-        mem[st].push(o);
+    if (st === 'tickets') {
+        const { db, fs } = await fb;
+        await fs.setDoc(fs.doc(db, COL, o.id), o);
+        return;
     }
+    if ((await tx(st, 'readwrite', s => s.put(o))) === null) mem[st].push(o);
 };
 
 const del = async (st, id) => {
+    if (st === 'tickets') {
+        const { db, fs } = await fb;
+        await fs.deleteDoc(fs.doc(db, COL, id));
+        return;
+    }
     await tx(st, 'readwrite', s => s.delete(id));
     mem[st] = mem[st].filter(x => x.id !== id);
 };
@@ -370,7 +406,7 @@ if (document.body.dataset.page === 'index') {
 } else {
     async function renderTamu(id) {
         const box = $('#tamu');
-        const t = (await all('tickets')).find(x => x.id === id);
+        const t = await one(id);
 
         if (!t) {
             box.innerHTML = '<p class="empty">Tiket ini belum bisa dibuka di perangkat ini.</p>';
@@ -391,7 +427,7 @@ if (document.body.dataset.page === 'index') {
         if (!b) return;
 
         const id = $('#tamu').dataset.id;
-        const t = (await all('tickets')).find(x => x.id === id);
+        const t = await one(id);
 
         if (!t) return;
 

@@ -1,6 +1,6 @@
 const firebaseConfig = {
     apiKey: "AIzaSyAdLxY-kDVc-djZtE6lZePHOMsLI2nH3ks",
-    authDomain: "Idate-invitation-b5f23.firebaseapp.com",
+    authDomain: "date-invitation-b5f23.firebaseapp.com",
     projectId: "date-invitation-b5f23",
     storageBucket: "date-invitation-b5f23.firebasestorage.app",
     messagingSenderId: "365462544645",
