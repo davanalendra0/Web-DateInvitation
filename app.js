@@ -317,6 +317,16 @@ if (document.body.dataset.page === 'index') {
         : '<p class="empty">Belum ada tiket.</p>';
     }
 
+    const ask = (title, body, ok = 'Ya, hapus') => new Promise(res => {
+        const d = $('#dlg');
+        $('#dlg-t').textContent = title;
+        $('#dlg-b').textContent = body;
+        d.querySelector('[value=yes]').textContent = ok;
+        d.returnValue = '';
+        d.onclose = () => res(d.returnValue === 'yes');
+        d.showModal();
+    });
+
     $('#hist').addEventListener('click', async e => {
         const b = e.target.closest('button');
         if (!b) return;
@@ -326,26 +336,26 @@ if (document.body.dataset.page === 'index') {
         const a = b.dataset.a;
 
         if (a === 'share') {
-        share((await all('tickets')).find(x => x.id === id));
+            share((await all('tickets')).find(x => x.id === id));
         } else if (a === 'link') {
-        copyLink(b, id);
+            copyLink(b, id);
         } else if (a === 'prev') {
-        window.open('tiket.html?id=' + id, '_blank');
+            window.open('tiket.html?id=' + id, '_blank');
         } else if (a === 'pick') {
-        it.querySelector('input[type=file]').click();
+            it.querySelector('input[type=file]').click();
         } else if (a === 'rec') {
-        record(it, b);
-        } else if (a === 'dm' && confirm('Hapus kenangan ini?')) {
-        await del('media', b.dataset.m);
-        renderHist();
-        } else if (a === 'del' && confirm('Hapus tiket ini? Kenangannya ikut terhapus.')) {
-        await del('tickets', id);
+            record(it, b);
+        } else if (a === 'dm' && await ask('Hapus kenangan ini?', 'Foto, video, atau audio ini akan dihapus dari tiket.')) {
+            await del('media', b.dataset.m);
+            renderHist();
+        } else if (a === 'del' && await ask('Hapus tiket “' + it.querySelector('.tk-title').textContent + '”?', 'Tiket, status jawabannya, dan kenangan di perangkat ini akan dihapus permanen. Link yang sudah dikirim ke Icel juga tidak bisa dibuka lagi.')) {
+            await del('tickets', id);
 
-        for (const m of (await all('media')).filter(m => m.tid === id)) {
-            await del('media', m.id);
-        }
+            for (const m of (await all('media')).filter(m => m.tid === id)) {
+                await del('media', m.id);
+            }
 
-        renderHist();
+            renderHist();
         }
     });
 
