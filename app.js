@@ -348,7 +348,7 @@ if (document.body.dataset.page === 'index') {
         } else if (a === 'dm' && await ask('Hapus kenangan ini?', 'Foto, video, atau audio ini akan dihapus dari tiket.')) {
             await del('media', b.dataset.m);
             renderHist();
-        } else if (a === 'del' && await ask('Hapus tiket “' + it.querySelector('.tk-title').textContent + '”?', 'Tiket, status jawabannya, dan kenangan di perangkat ini akan dihapus permanen. Link yang sudah dikirim ke Icel juga tidak bisa dibuka lagi.')) {
+        } else if (a === 'del' && await ask('Hapus tiket “' + it.querySelector('.tk-title').textContent + '”?', 'Tiket, status jawabannya, dan kenangan di perangkat ini akan dihapus permanen.')) {
             await del('tickets', id);
 
             for (const m of (await all('media')).filter(m => m.tid === id)) {
