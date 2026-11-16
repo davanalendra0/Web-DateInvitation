@@ -479,3 +479,123 @@ h2 {
         }
     }
 }
+
+
+/* RESPONSIF */
+.wrap {
+    width: 100%;
+    max-width: 1040px;
+}
+
+.tamu {
+    width: 100%;
+    max-width: 560px;
+}
+
+dialog {
+    width: calc(100% - 32px);
+    max-width: 420px;
+}
+
+.grid>*,
+.item,
+.list {
+    min-width: 0;
+}
+
+img,
+video {
+    max-width: 100%;
+}
+
+/* lebar stub dijadikan variabel supaya lekuk perforasi ikut menyesuaikan */
+.ticket {
+    --stub: 92px;
+    grid-template-columns: 1fr var(--stub);
+    -webkit-mask: radial-gradient(circle 11px at calc(100% - var(--stub)) 0, #0000 98%, #000) top / 100% 51% no-repeat,
+        radial-gradient(circle 11px at calc(100% - var(--stub)) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+    mask: radial-gradient(circle 11px at calc(100% - var(--stub)) 0, #0000 98%, #000) top / 100% 51% no-repeat,
+        radial-gradient(circle 11px at calc(100% - var(--stub)) 100%, #0000 98%, #000) bottom / 100% 51% no-repeat;
+}
+
+/* Tablet (<= 900px) */
+@media (max-width: 900px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .grid .tk {
+        position: static;
+    }
+
+    .media {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* HP besar (<= 600px) */
+@media (max-width: 600px) {
+    .wrap {
+        padding: 16px 14px 48px;
+    }
+
+    .tamu {
+        padding-top: 20px;
+    }
+
+    h1 {
+        font-size: 24px;
+    }
+
+    form {
+        padding: 14px;
+    }
+
+    .ticket {
+        --stub: 76px;
+    }
+
+    .tk-main {
+        padding: 18px 14px 16px 18px;
+    }
+
+    .tk-inv {
+        font-size: 17px;
+    }
+
+    .tk-title {
+        font-size: 30px;
+    }
+
+    .tk-stub b {
+        font-size: 30px;
+    }
+
+    .media {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .btn.sm {
+        padding: 12px 16px;
+    }
+
+    .lb-x {
+        top: 12px;
+        right: 12px;
+    }
+}
+
+/* HP kecil (<= 420px) */
+@media (max-width: 420px) {
+    .row {
+        grid-template-columns: 1fr;
+    }
+
+    .tk-title {
+        font-size: 26px;
+    }
+
+    .media {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
